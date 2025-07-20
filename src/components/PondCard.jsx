@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Thermometer, Droplets, Activity, Waves, CheckCircle, AlertTriangle } from 'lucide-react';
 
 const PondCard = ({ pond, onClick }) => {
+  const [showSalinity, setShowSalinity] = useState(false);
   const getSensorStatus = (value, type) => {
     switch (type) {
       case 'temperature':
@@ -37,9 +38,9 @@ const PondCard = ({ pond, onClick }) => {
     {
       icon: Activity,
       label: 'pH Level',
-      value: pond.ph,
+      value: pond.ph !== undefined ? pond.ph : pond.pH,
       unit: 'pH',
-      status: getSensorStatus(pond.ph, 'ph'),
+      status: getSensorStatus(pond.ph !== undefined ? pond.ph : pond.pH, 'ph'),
       color: 'from-green-500 to-emerald-500'
     },
     {
@@ -57,6 +58,14 @@ const PondCard = ({ pond, onClick }) => {
       unit: 'm',
       status: getSensorStatus(pond.waterLevel, 'waterLevel'),
       color: 'from-purple-500 to-indigo-500'
+    },
+    {
+      icon: Droplets,
+      label: 'Salinity',
+      value: pond.salinity,
+      unit: 'ppm',
+      status: 'good',
+      color: 'from-cyan-500 to-blue-400'
     }
   ];
 
@@ -91,7 +100,7 @@ const PondCard = ({ pond, onClick }) => {
               </div>
               <p className="text-xs text-gray-600 mb-1">{sensor.label}</p>
               <p className={`text-lg font-bold ${getStatusColor(sensor.status)}`}>
-                {sensor.value.toFixed(1)}{sensor.unit}
+                {typeof sensor.value === 'number' && !isNaN(sensor.value) ? sensor.value : '--'}{sensor.unit}
               </p>
             </div>
           );

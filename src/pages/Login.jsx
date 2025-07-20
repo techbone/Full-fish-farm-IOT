@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Login = ({ onSwitchToRegister }) => {
   const [credentials, setCredentials] = useState({
-    email: '',
+    username: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -63,21 +63,21 @@ const Login = ({ onSwitchToRegister }) => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Email */}
+            {/* Username */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email Address
+                Username
               </label>
               <div className="relative">
                 <Mail size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
-                  type="email"
-                  name="email"
-                  value={credentials.email}
+                  type="text"
+                  name="username"
+                  value={credentials.username}
                   onChange={handleInputChange}
                   required
                   className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your email"
+                  placeholder="Enter your username"
                 />
               </div>
             </div>

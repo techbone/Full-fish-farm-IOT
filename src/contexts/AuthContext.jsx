@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import * as api from '../services/api';
+import { isTokenExpired } from '../utils/jwt';
 
 const AuthContext = createContext(undefined);
 
@@ -53,11 +54,17 @@ export const AuthProvider = ({ children }) => {
     // Check for existing token on app start
     const token = localStorage.getItem('token');
     const userRole = localStorage.getItem('userRole');
-    const userEmail = localStorage.getItem('userEmail');
-    
-    if (token && userRole && userEmail) {
+    const userUsername = localStorage.getItem('userUsername');
+    if (token && isTokenExpired(token)) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('userUsername');
+      dispatch({ type: 'LOGOUT' });
+      return;
+    }
+    if (token && userRole && userUsername) {
       const user = {
-        email: userEmail,
+        username: userUsername,
         token,
         role: userRole,
       };
@@ -68,9 +75,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (credentials) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const response = await api.login(credentials.email, credentials.password);
+      const response = await api.login(credentials.username, credentials.password);
       const user = {
-        email: credentials.email,
+        username: credentials.username,
         token: response.token,
         role: response.role,
       };
@@ -78,7 +85,7 @@ export const AuthProvider = ({ children }) => {
       // Store in localStorage
       localStorage.setItem('token', response.token);
       localStorage.setItem('userRole', response.role);
-      localStorage.setItem('userEmail', credentials.email);
+      localStorage.setItem('userUsername', credentials.username);
       
       dispatch({ type: 'LOGIN_SUCCESS', payload: user });
     } catch (error) {
@@ -101,7 +108,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
-    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userUsername');
     dispatch({ type: 'LOGOUT' });
   };
 

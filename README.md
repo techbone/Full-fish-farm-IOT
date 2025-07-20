@@ -1,6 +1,6 @@
 # Fish Farming IoT Application
 
-A modern, responsive web application for monitoring fish farming conditions using IoT sensors. Built with React, TypeScript, and Tailwind CSS.
+A modern, responsive web application for monitoring fish farming conditions using IoT sensors. Built with React and Tailwind CSS.
 
 ## Features
 
@@ -13,7 +13,7 @@ A modern, responsive web application for monitoring fish farming conditions usin
 
 ## Technology Stack
 
-- **Frontend**: React 18 with TypeScript
+- **Frontend**: React 18
 - **Styling**: Tailwind CSS
 - **Build Tool**: Vite
 - **Icons**: Lucide React
@@ -132,10 +132,9 @@ src/
 ├── components/          # React components
 ├── hooks/              # Custom React hooks
 ├── services/           # API services
-├── types/              # TypeScript type definitions
-├── App.tsx             # Main application component
-├── main.tsx           # Application entry point
-└── index.css          # Global styles
+├── App.jsx             # Main application component
+├── main.jsx            # Application entry point
+└── index.css           # Global styles
 ```
 
 ### Available Scripts
@@ -147,7 +146,7 @@ src/
 
 ### Code Style
 
-- Use TypeScript for type safety
+- Use JavaScript for development
 - Follow React best practices
 - Use Tailwind CSS for styling
 - Add comments for complex logic

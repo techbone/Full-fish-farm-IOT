@@ -1,208 +1,79 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001/api';
-const USE_MOCK_DATA = import.meta.env.VITE_USE_MOCK_DATA === 'true';
+import axios from 'axios';
 
-// Mock data
-const mockPonds = [
-  {
-    id: 1,
-    name: 'Pond 1',
-    temperature: 25.5,
-    turbidity: 10,
-    ph: 7.2,
-    waterLevel: 1.5,
-    lastUpdated: new Date().toISOString(),
-    verified: true,
-  },
-  {
-    id: 2,
-    name: 'Pond 2',
-    temperature: 26.0,
-    turbidity: 12,
-    ph: 7.0,
-    waterLevel: 1.4,
-    lastUpdated: new Date().toISOString(),
-    verified: true,
-  },
-  {
-    id: 3,
-    name: 'Pond 3',
-    temperature: 24.8,
-    turbidity: 11,
-    ph: 7.3,
-    waterLevel: 1.6,
-    lastUpdated: new Date().toISOString(),
-    verified: false,
-  },
-];
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5173/api';
 
-const generateMockHistoricalData = (hours = 24) => {
-  const data = [];
-  const now = new Date();
-  
-  for (let i = hours; i >= 0; i--) {
-    const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000);
-    data.push({
-      timestamp: timestamp.toISOString(),
-      temperature: 25 + Math.random() * 2,
-      turbidity: 10 + Math.random() * 3,
-      ph: 7 + Math.random() * 0.6,
-      waterLevel: 1.4 + Math.random() * 0.3,
-      verified: Math.random() > 0.1,
-    });
+// Token management
+export const getToken = () => localStorage.getItem('jwt_token');
+export const setToken = (token) => localStorage.setItem('jwt_token', token);
+export const removeToken = () => localStorage.removeItem('jwt_token');
+
+// Login (POST /api/auth/login)
+export const login = async (username, password) => {
+  const response = await axios.post(`${API_BASE_URL}/api/auth/login`, { username, password });
+  if (response.data && response.data.token) {
+    setToken(response.data.token);
   }
-  
-  return data;
+  return response.data;
 };
 
-const generateMockCurrentReadings = () => {
-  const now = new Date().toISOString();
-  return {
-    temperature: {
-      value: 25.5 + Math.random() * 2,
-      unit: '°C',
-      timestamp: now,
-      status: 'good',
-      verified: true,
-    },
-    turbidity: {
-      value: 10 + Math.random() * 3,
-      unit: 'NTU',
-      timestamp: now,
-      status: 'good',
-      verified: true,
-    },
-    ph: {
-      value: 7 + Math.random() * 0.6,
-      unit: 'pH',
-      timestamp: now,
-      status: 'good',
-      verified: true,
-    },
-    waterLevel: {
-      value: 1.4 + Math.random() * 0.3,
-      unit: 'm',
-      timestamp: now,
-      status: 'good',
-      verified: true,
-    },
-    lastUpdated: now,
-  };
-};
-
-// API functions
-export const login = async (email, password) => {
-  if (USE_MOCK_DATA) {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Mock admin/viewer logic
-    const role = email.includes('admin') ? 'admin' : 'viewer';
-    return { token: 'mock-jwt-token', role };
-  }
-
-  const response = await fetch(`${API_BASE_URL}/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Login failed');
-  }
-
-  return response.json();
-};
-
+// Register (POST /api/auth/register)
 export const register = async (email, password, name) => {
-  if (USE_MOCK_DATA) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    return { message: 'Registration successful' };
-  }
-
-  const response = await fetch(`${API_BASE_URL}/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password, name }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Registration failed');
-  }
-
-  return response.json();
+  const response = await axios.post(`${API_BASE_URL}/api/auth/register`, { email, password, name });
+  return response.data;
 };
 
-export const getPonds = async (token) => {
-  if (USE_MOCK_DATA) {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    return mockPonds;
-  }
-
-  const response = await fetch(`${API_BASE_URL}/ponds`, {
+// Get Current Readings (GET /api/sensors/current)
+export const getCurrentReadings = async () => {
+  const token = getToken();
+  const response = await axios.get(`${API_BASE_URL}/api/sensors/current`, {
     headers: { Authorization: `Bearer ${token}` },
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch ponds');
-  }
-
-  return response.json();
+  return response.data;
 };
 
-export const getCurrentReadings = async (token) => {
-  if (USE_MOCK_DATA) {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return generateMockCurrentReadings();
-  }
-
-  const response = await fetch(`${API_BASE_URL}/sensors/current`, {
+// Get Pond History (GET /api/ponds/:pondId/history?range=)
+export const getPondHistory = async (pondId, timeRange = '24h') => {
+  const token = getToken();
+  const response = await axios.get(`${API_BASE_URL}/api/ponds/${pondId}/history`, {
+    params: { range: timeRange },
     headers: { Authorization: `Bearer ${token}` },
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch current readings');
-  }
-
-  return response.json();
+  return response.data;
 };
 
-export const getPondHistory = async (pondId, token, timeRange = '24h') => {
-  if (USE_MOCK_DATA) {
-    await new Promise(resolve => setTimeout(resolve, 500));
-    const hours = timeRange === '1h' ? 1 : timeRange === '7d' ? 168 : 24;
-    return generateMockHistoricalData(hours);
-  }
-
-  const response = await fetch(`${API_BASE_URL}/ponds/${pondId}/history?range=${timeRange}`, {
+// Send Command (POST /api/ponds/:pondId/command)
+export const sendCommand = async (pondId, command) => {
+  const token = getToken();
+  const response = await axios.post(`${API_BASE_URL}/api/ponds/${pondId}/command`, command, {
     headers: { Authorization: `Bearer ${token}` },
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch pond history');
-  }
-
-  return response.json();
+  return response.data;
 };
 
-export const sendCommand = async (pondId, command, token) => {
-  if (USE_MOCK_DATA) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log(`Mock command sent to pond ${pondId}:`, command);
-    return { message: 'Command sent successfully' };
-  }
-
-  const response = await fetch(`${API_BASE_URL}/ponds/${pondId}/command`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(command),
+// Get Sensor Data (GET /api/sensors/:sensorId/data?limit=)
+export const getSensorData = async (sensorId, limit = 100) => {
+  const token = getToken();
+  const response = await axios.get(`${API_BASE_URL}/api/sensors/${sensorId}/data`, {
+    params: { limit },
+    headers: { Authorization: `Bearer ${token}` },
   });
+  return response.data;
+};
 
-  if (!response.ok) {
-    throw new Error('Failed to send command');
-  }
+// Get Sensor Thresholds (GET /api/sensors/:sensorId/thresholds)
+export const getSensorThresholds = async (sensorId) => {
+  const token = getToken();
+  const response = await axios.get(`${API_BASE_URL}/api/sensors/${sensorId}/thresholds`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};
 
-  return response.json();
+// Update/Create Sensor Thresholds (POST /api/sensors/:sensorId/thresholds)
+export const setSensorThresholds = async (sensorId, thresholds) => {
+  const token = getToken();
+  const response = await axios.post(`${API_BASE_URL}/api/sensors/${sensorId}/thresholds`, thresholds, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
 };

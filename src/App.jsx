@@ -1,55 +1,28 @@
-import { useState, useEffect } from 'react';
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import React from "react";
+import { AuthProvider } from './contexts/AuthContext';
 import { PondProvider } from './contexts/PondContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import PondDetail from './pages/PondDetail';
 import LoadingScreen from './components/LoadingScreen';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './contexts/AuthContext';
 
-/**
- * Main App component with routing and authentication
- */
 function AppContent() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [authMode, setAuthMode] = useState('login');
-  const [currentView, setCurrentView] = useState('dashboard');
-  const [selectedPondId, setSelectedPondId] = useState(null);
   const { isAuthenticated, loading } = useAuth();
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [authMode, setAuthMode] = React.useState('login');
 
-  // Handle loading screen completion
-  const handleLoadingComplete = () => {
-    setIsLoading(false);
-  };
-
-  // Handle hash-based routing
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash;
-      if (hash.startsWith('#/pond/')) {
-        const pondId = parseInt(hash.split('/')[2]);
-        if (!isNaN(pondId)) {
-          setSelectedPondId(pondId);
-          setCurrentView('pond');
-        }
-      } else {
-        setCurrentView('dashboard');
-        setSelectedPondId(null);
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Handle initial hash
-
-    return () => window.removeEventListener('hashchange', handleHashChange);
+  React.useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1000);
+    return () => clearTimeout(timer);
   }, []);
 
-  // Show loading screen initially
   if (isLoading) {
-    return <LoadingScreen onComplete={handleLoadingComplete} />;
+    return <LoadingScreen onComplete={() => setIsLoading(false)} />;
   }
 
-  // Show auth loading
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-600 via-cyan-500 to-blue-700 flex items-center justify-center">
@@ -61,7 +34,6 @@ function AppContent() {
     );
   }
 
-  // Show authentication screens
   if (!isAuthenticated) {
     if (authMode === 'register') {
       return <Register onSwitchToLogin={() => setAuthMode('login')} />;
@@ -69,28 +41,22 @@ function AppContent() {
     return <Login onSwitchToRegister={() => setAuthMode('register')} />;
   }
 
-  // Show main application
-  if (currentView === 'pond' && selectedPondId) {
-    return (
-      <PondDetail
-        pondId={selectedPondId}
-        onBack={() => {
-          window.location.hash = '#/dashboard';
-          setCurrentView('dashboard');
-          setSelectedPondId(null);
-        }}
-      />
-    );
-  }
-
-  return <Dashboard />;
+  return (
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/pond/:sensorId" element={<PondDetail />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
 }
 
 function App() {
   return (
     <AuthProvider>
       <PondProvider>
-        <AppContent />
+        <Router>
+          <AppContent />
+        </Router>
       </PondProvider>
     </AuthProvider>
   );

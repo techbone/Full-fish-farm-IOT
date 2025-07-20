@@ -24,15 +24,34 @@ ChartJS.register(
 );
 
 const SensorChart = ({ data, sensorType, title, color, unit }) => {
+  // Use correct keys from getSensorData sample
+  const getValue = (d) => {
+    if (sensorType === 'ph') {
+      return d.pH;
+    }
+    return d[sensorType];
+  };
+
   const chartData = {
-    labels: data.map(d => new Date(d.timestamp).toLocaleTimeString([], { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    })),
+    labels: data.map(d => {
+      if (d.createdAt && !isNaN(Date.parse(d.createdAt))) {
+        const date = new Date(d.createdAt);
+        // Format as 'YYYY-MM-DD HH:mm'
+        return date.toLocaleString([], {
+          year: '2-digit',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        }).replace(',', '');
+      }
+      return '';
+    }),
     datasets: [
       {
         label: title,
-        data: data.map(d => d[sensorType]),
+        data: data.map(getValue),
         borderColor: color,
         backgroundColor: `${color}20`,
         fill: true,

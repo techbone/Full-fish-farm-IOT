@@ -4,6 +4,8 @@ import { useAuth } from './AuthContext';
 
 const PondContext = createContext(undefined);
 
+const SENSOR_IDS = ['fish_tank_1', 'fish_tank_2'];
+
 const pondReducer = (state, action) => {
   switch (action.type) {
     case 'FETCH_START':
@@ -11,58 +13,63 @@ const pondReducer = (state, action) => {
     case 'FETCH_SUCCESS':
       return { ...state, loading: false, ponds: action.payload, error: null };
     case 'FETCH_ERROR':
-    case 'COMMAND_ERROR':
       return { ...state, loading: false, error: action.payload };
     case 'SELECT_POND':
       return { ...state, selectedPond: action.payload };
-    case 'UPDATE_POND':
+    case 'UPDATE_POND': {
       const updatedPonds = state.ponds.map(pond =>
-        pond.id === action.payload.pondId
-          ? {
-              ...pond,
-              temperature: action.payload.temperature,
-              turbidity: action.payload.turbidity,
-              ph: action.payload.ph,
-              waterLevel: action.payload.waterLevel,
-              lastUpdated: action.payload.timestamp || new Date().toISOString(),
-              verified: action.payload.verified,
-            }
+        pond.sensorId === action.payload.sensorId
+          ? { ...pond, ...action.payload }
           : pond
       );
       return {
         ...state,
         ponds: updatedPonds,
-        selectedPond: state.selectedPond?.id === action.payload.pondId
-          ? updatedPonds.find(p => p.id === action.payload.pondId) || state.selectedPond
+        selectedPond: state.selectedPond?.sensorId === action.payload.sensorId
+          ? updatedPonds.find(p => p.sensorId === action.payload.sensorId) || state.selectedPond
           : state.selectedPond,
       };
-    case 'COMMAND_SUCCESS':
-      return { ...state, error: null };
+    }
+    case 'ADD_ALERT':
+      return { ...state, alerts: [action.payload, ...(state.alerts || [])] };
     default:
       return state;
   }
 };
 
 const initialState = {
-  ponds: [],
+  ponds: JSON.parse(localStorage.getItem('ponds') || '[]'),
   selectedPond: null,
   loading: false,
   error: null,
+  alerts: [],
 };
 
 export const PondProvider = ({ children }) => {
   const [state, dispatch] = useReducer(pondReducer, initialState);
   const { user } = useAuth();
 
-  const fetchPonds = async () => {
+  // Save ponds to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('ponds', JSON.stringify(state.ponds));
+  }, [state.ponds]);
+
+  const fetchAllSensorData = async () => {
     if (!user?.token) return;
-    
     dispatch({ type: 'FETCH_START' });
     try {
-      const ponds = await api.getPonds(user.token);
-      dispatch({ type: 'FETCH_SUCCESS', payload: ponds });
+      const pondData = await Promise.all(
+        SENSOR_IDS.map(async (sensorId) => {
+          const data = await api.getSensorData(sensorId);
+          // Use the latest data point (last in array)
+          return Array.isArray(data) && data.length > 0
+            ? { ...data[data.length - 1], sensorId }
+            : { ...data, sensorId };
+        })
+      );
+      dispatch({ type: 'FETCH_SUCCESS', payload: pondData });
     } catch (error) {
-      dispatch({ type: 'FETCH_ERROR', payload: 'Failed to fetch pond data' });
+      dispatch({ type: 'FETCH_ERROR', payload: 'Failed to fetch sensor data' });
     }
   };
 
@@ -74,33 +81,23 @@ export const PondProvider = ({ children }) => {
     dispatch({ type: 'UPDATE_POND', payload: message });
   };
 
-  const sendCommand = async (pondId, command) => {
-    if (!user?.token || user.role !== 'admin') {
-      throw new Error('Unauthorized: Admin access required');
-    }
-    
-    try {
-      await api.sendCommand(pondId, command, user.token);
-      dispatch({ type: 'COMMAND_SUCCESS' });
-    } catch (error) {
-      dispatch({ type: 'COMMAND_ERROR', payload: 'Failed to send command' });
-      throw error;
-    }
+  const addAlert = (alert) => {
+    dispatch({ type: 'ADD_ALERT', payload: alert });
   };
 
   useEffect(() => {
     if (user?.token) {
-      fetchPonds();
+      fetchAllSensorData();
     }
   }, [user?.token]);
 
   return (
     <PondContext.Provider value={{
       ...state,
-      fetchPonds,
+      fetchAllSensorData,
       selectPond,
       updatePondData,
-      sendCommand,
+      addAlert,
     }}>
       {children}
     </PondContext.Provider>

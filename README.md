@@ -172,3 +172,51 @@ src/
 ## License
 
 This project is licensed under the MIT License.
+
+# Push Notification Setup
+
+## 1. Generate VAPID Keys
+
+Run:
+
+```
+npx web-push generate-vapid-keys
+```
+
+Copy the public and private keys. Replace `<YOUR_PUBLIC_VAPID_KEY>` and `<YOUR_PRIVATE_VAPID_KEY>` in:
+- `src/utils/pushNotifications.js` (public key)
+- `backend/server.js` (both keys)
+
+## 2. Start the Backend
+
+```
+cd backend
+npm install
+node server.js
+```
+
+## 3. Start the Frontend
+
+```
+npm install
+npm run dev
+```
+
+## 4. Subscribe to Notifications
+
+Call `subscribeUserToPush()` from `src/utils/pushNotifications.js` after user login or on a button click.
+
+## 5. Send a Notification
+
+POST to `/api/notify` on the backend with JSON:
+
+```
+{
+  "title": "Test Alert",
+  "body": "This is a test notification."
+}
+```
+
+---
+
+Notifications will appear even if the PWA is closed, as long as it is installed and the user has granted permission.

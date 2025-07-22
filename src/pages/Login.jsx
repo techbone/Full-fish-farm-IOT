@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Fish } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { subscribeUserToPush } from '../utils/pushNotifications';
 
 const Login = ({ onSwitchToRegister }) => {
   const [credentials, setCredentials] = useState({
@@ -14,6 +15,7 @@ const Login = ({ onSwitchToRegister }) => {
     e.preventDefault();
     try {
       await login(credentials);
+      await subscribeUserToPush();
     } catch (error) {
       // Error is handled by context
     }

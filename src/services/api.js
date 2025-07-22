@@ -77,3 +77,12 @@ export const setSensorThresholds = async (sensorId, thresholds) => {
   });
   return response.data;
 };
+
+// Subscribe to Push Notifications (POST /api/subscribe)
+export const subscribeToPush = async (subscription) => {
+  const token = getToken();
+  const response = await axios.post(`${API_BASE_URL}/api/subscribe`, subscription, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return response.data;
+};

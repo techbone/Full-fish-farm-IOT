@@ -22,24 +22,8 @@ export const register = async (email, password, name) => {
   return response.data;
 };
 
-// Get Current Readings (GET /api/sensors/current)
-export const getCurrentReadings = async () => {
-  const token = getToken();
-  const response = await axios.get(`${API_BASE_URL}/api/sensors/current`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
 
-// Get Pond History (GET /api/ponds/:pondId/history?range=)
-export const getPondHistory = async (pondId, timeRange = '24h') => {
-  const token = getToken();
-  const response = await axios.get(`${API_BASE_URL}/api/ponds/${pondId}/history`, {
-    params: { range: timeRange },
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
+
 
 // Send Command (POST /api/ponds/:pondId/command)
 export const sendCommand = async (pondId, command) => {

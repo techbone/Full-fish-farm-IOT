@@ -25,14 +25,7 @@ export const register = async (email, password, name) => {
 
 
 
-// Send Command (POST /api/ponds/:pondId/command)
-export const sendCommand = async (pondId, command) => {
-  const token = getToken();
-  const response = await axios.post(`${API_BASE_URL}/api/ponds/${pondId}/command`, command, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  return response.data;
-};
+
 
 // Get Sensor Data (GET /api/sensors/:sensorId/data?limit=)
 export const getSensorData = async (sensorId, limit = 100) => {

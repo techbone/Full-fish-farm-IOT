@@ -32,7 +32,7 @@ const LoadingScreen = ({ onComplete }) => {
             />
           </div>
           <h1 className="text-4xl font-bold text-white mb-2">Fish Farming</h1>
-          <p className="text-blue-100 text-lg">IoT Monitoring System</p>
+          <p className="text-blue-100 text-lg">IoT Monitoring System.</p>
           <p className="text-blue-200 text-sm mt-2">OAUSTECH Innovation</p>
         </div>
         

@@ -49,7 +49,7 @@ const LoadingScreen = ({ onComplete }) => {
         
         {/* Loading text */}
         <p className="text-blue-100 mt-2">
-          {progress < 30 ? 'Initializing sensors...' :
+          {progress < 30 ? 'Starting sensors...' :
            progress < 60 ? 'Connecting to devices...' :
            progress < 90 ? 'Loading dashboard...' :
            'Almost ready!'}

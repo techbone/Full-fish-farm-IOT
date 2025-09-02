@@ -106,7 +106,7 @@ const AdminControls = ({ pondId }) => {
             disabled={isLoading}
             className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50"
           >
-            🚨 Emergency Stop All Systems!
+            🚨 Emergency Stop All Systems Now!
           </button>
           <button
             onClick={() => handleCommand(

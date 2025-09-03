@@ -57,10 +57,10 @@ const Login = ({ onSwitchToRegister }) => {
 
           {/* Demo Accounts */}
           <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm font-medium text-blue-800 mb-2">Demo Accounts:</p>
+            <p className="text-sm font-medium text-blue-800 mb-2">Available Accounts:</p>
             <div className="text-xs text-blue-600 space-y-1">
-              <p><strong>Admin:</strong> admin@fishfarm.com / password</p>
-              <p><strong>Viewer:</strong> viewer@fishfarm.com / password</p>
+              <p><strong>Admin:</strong> admin / password</p>
+              <p><strong>Viewer:</strong> viewer / password</p>
             </div>
           </div>
 

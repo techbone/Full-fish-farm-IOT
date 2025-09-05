@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Fish } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { subscribeUserToPush } from '../utils/pushNotifications';
 
@@ -33,8 +33,12 @@ const Login = ({ onSwitchToRegister }) => {
       <div className="w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-white rounded-full mb-4 shadow-2xl p-2">
-            <Fish size={40} className="text-blue-600" />
+          <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden bg-white p-2 shadow-2xl">
+            <img
+              src="/OAUSTECH LOGO.png"
+              alt="OAUSTECH Logo"
+              className="w-full h-full object-contain rounded-full"
+            />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">Fish Farm Monitor</h1>
           <p className="text-blue-100">Three Pond Management System</p>

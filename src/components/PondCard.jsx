@@ -110,7 +110,7 @@ const PondCard = ({ pond, onClick }) => {
       {/* Last Updated */}
       <div className="mt-4 pt-4 border-t border-gray-100">
         <p className="text-xs text-gray-500 text-center">
-          Last updated: {pond.lastUpdated ? new Date(pond.lastUpdated).toLocaleTimeString() : 'Never'}
+          Last updated: {pond.lastUpdated ? new Date(pond.lastUpdated).toLocaleString() : 'Never'}
         </p>
       </div>
     </div>

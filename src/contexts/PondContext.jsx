@@ -62,9 +62,31 @@ export const PondProvider = ({ children }) => {
         SENSOR_IDS.map(async (sensorId) => {
           const data = await api.getSensorData(sensorId);
           // Use the latest data point (last in array)
-          return Array.isArray(data) && data.length > 0
+          const pondInfo = Array.isArray(data) && data.length > 0
             ? { ...data[data.length - 1], sensorId }
             : { ...data, sensorId };
+          
+          // Extract the most recent timestamp from historical data
+          let lastUpdated = null;
+          if (Array.isArray(data) && data.length > 0) {
+            // Find the most recent timestamp from all records
+            const timestamps = data
+              .map(record => record.timestamp || record.lastUpdated || record.createdAt)
+              .filter(Boolean)
+              .sort((a, b) => new Date(b) - new Date(a));
+            
+            lastUpdated = timestamps[0] || null;
+          } else if (pondInfo.timestamp || pondInfo.lastUpdated || pondInfo.createdAt) {
+            lastUpdated = pondInfo.timestamp || pondInfo.lastUpdated || pondInfo.createdAt;
+          }
+          
+          // Add default verification status and name if not present
+          return {
+            ...pondInfo,
+            verified: pondInfo.verified !== undefined ? pondInfo.verified : true,
+            name: pondInfo.name || `Pond ${sensorId.split('_').pop()}`,
+            lastUpdated: lastUpdated,
+          };
         })
       );
       dispatch({ type: 'FETCH_SUCCESS', payload: pondData });
@@ -78,7 +100,12 @@ export const PondProvider = ({ children }) => {
   };
 
   const updatePondData = (message) => {
-    dispatch({ type: 'UPDATE_POND', payload: message });
+    // Ensure lastUpdated is set from the incoming message
+    const updatedMessage = {
+      ...message,
+      lastUpdated: message.timestamp || message.lastUpdated || message.createdAt || new Date().toISOString(),
+    };
+    dispatch({ type: 'UPDATE_POND', payload: updatedMessage });
   };
 
   const addAlert = (alert) => {

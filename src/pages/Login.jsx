@@ -151,7 +151,7 @@ const Login = ({ onSwitchToRegister }) => {
             Secure authentication with role-based access
           </p>
           <p className="text-blue-200 text-xs mt-1">
-            © 2024 Fish Farm Monitor - PWA Technology
+            © 2024 Fish Farm Monitor - Mobile Technology
           </p>
         </div>
       </div>

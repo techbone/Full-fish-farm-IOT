@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Wifi, WifiOff, Users, Activity, AlertTriangle } from 'lucide-react';
+import { Wifi, WifiOff, Activity, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { usePond } from '../contexts/PondContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usePondWebSocket } from '../services/websocket';
@@ -22,7 +22,6 @@ const Dashboard = () => {
     navigate(`/pond/${pond.sensorId}`);
   };
 
-  // Alert display state
   const [dismissed, setDismissed] = React.useState([]);
   const handleDismiss = (idx) => setDismissed((prev) => [...prev, idx]);
 
@@ -57,7 +56,6 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-      {/* Alerts */}
       {alerts && alerts.length > 0 && (
         <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-xl">
           {alerts.slice(0, 3).map((alert, idx) =>
@@ -77,7 +75,6 @@ const Dashboard = () => {
           )}
         </div>
       )}
-      {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200 px-4 md:px-8 py-6">
         <div className="flex items-center justify-between">
           <div>
@@ -87,8 +84,13 @@ const Dashboard = () => {
             <p className="text-gray-600 mt-1 text-sm md:text-base">
               Three Pond Monitoring System
             </p>
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1">
+              <ShieldCheck size={16} className="text-emerald-600" />
+              <span className="text-xs md:text-sm text-emerald-700">
+                All data hashed and anchored on Polygon for integrity
+              </span>
+            </div>
           </div>
-          {/* Status indicators and Logout */}
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               {isConnected ? (
@@ -100,8 +102,6 @@ const Dashboard = () => {
                 {isConnected ? 'Connected' : 'Disconnected'}
               </span>
             </div>
-            
-            {/* Logout Button */}
             {isAuthenticated && (
               <>
                 <button
@@ -138,9 +138,7 @@ const Dashboard = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="px-4 md:px-8 py-6 md:py-8">
-        {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-2">
             Welcome back, {user?.name || user?.email}
@@ -151,7 +149,6 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* System Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
             <div className="flex items-center space-x-3">
@@ -178,11 +175,8 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          
-          
         </div>
 
-        {/* Pond Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {ponds.map((pond) => (
             pond && pond.sensorId ? (
@@ -195,7 +189,6 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Empty State */}
         {ponds.length === 0 && !loading && (
           <div className="text-center py-12">
             <Activity size={48} className="text-gray-400 mx-auto mb-4" />

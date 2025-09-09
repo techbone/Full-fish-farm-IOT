@@ -141,7 +141,7 @@ const Dashboard = () => {
       <main className="px-4 md:px-8 py-6 md:py-8">
         <div className="mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-2">
-            Welcome back, {user?.name || user?.email}
+            Welcome back! , {user?.name || user?.email}
           </h2>
           <p className="text-gray-600">
             Monitor your three fish ponds in real time. 

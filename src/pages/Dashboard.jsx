@@ -144,7 +144,7 @@ const Dashboard = () => {
             Welcome back!, {user?.name || user?.email}
           </h2>
           <p className="text-gray-600">
-            Monitor your two fish ponds in real time. 
+            Monitor your two fish ponds in real time1. 
             {user?.role === 'admin' ? ' Click on any pond card to access controls.' : ' Click on any pond for detailed view.'}
           </p>
         </div>

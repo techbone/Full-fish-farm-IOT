@@ -192,7 +192,7 @@ const Dashboard = () => {
         {ponds.length === 0 && !loading && (
           <div className="text-center py-12">
             <Activity size={48} className="text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Ponds Available</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Ponds Available Right Now</h3>
             <p className="text-gray-600">
               No pond data is currently available. Please check your connection.
             </p>

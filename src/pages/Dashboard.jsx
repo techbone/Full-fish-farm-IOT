@@ -194,7 +194,7 @@ const Dashboard = () => {
             <Activity size={48} className="text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">No Ponds Available At The Moment</h3>
             <p className="text-gray-600">
-              No pond data is currently available. Please check your connection.
+              No pond data is currently available. Please do check your connection.
             </p>
           </div>
         )}

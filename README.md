@@ -7,7 +7,7 @@ A modern, responsive web application for monitoring and controlling fish ponds u
 - **Authentication**: Login and registration with JWT, role awareness stored in `localStorage`.
 - **Dashboard**: Overview of all ponds with health indicators and last-updated times.
 - **Real-time data**: Live updates via WebSocket (`sensorData`, `alert` events).
-- **Historical data**: Fetch sensor history per pond for charts (via REST API).
+- **Historical data**: Fetch sensor history per pond for charts (via REST API.
 - **Alerts**: Realtime alert toasts with dismiss capability.
 - **Admin controls**: Trigger operational commands (pump, aerator, chemicals, system check) and emergency actions.
 - **Responsive UI**: Mobile-first design using Tailwind CSS and `lucide-react` icons.
